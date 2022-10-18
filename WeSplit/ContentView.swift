@@ -43,6 +43,22 @@ struct ContentView: View {
         return grandTotal
     }
     
+    // Creating a new property with a special type. For this app, we want it to work with Doubles.
+    var dollarFormat : FloatingPointFormatStyle<Double>.Currency {
+        let currencyCode:String
+        if #available(iOS 16, *) {
+            // Run code in iOS 16 or later.
+            currencyCode = Locale.current.currency?.identifier ?? "USD"
+
+        } else {
+            // Fall back to earlier iOS APIs.
+            currencyCode = Locale.current.currencyCode ?? "USD"
+        }
+        
+       return FloatingPointFormatStyle<Double>.Currency(
+        code: currencyCode)
+    }
+    
     var body: some View {
         NavigationView {
             Form {
@@ -53,23 +69,16 @@ struct ContentView: View {
                     //                    .keyboardType(.decimalPad)
                     ///Locale is a massive struct built into iOS that is responsible for storing all the user’s region settings – what calendar they use, how they separate thousands digits in numbers, whether they use the metric system, and more. In our case, we’re asking whether the user has a preferred currency code, and if they don’t we’ll fall back to “USD” so at least we have something.
                     
-                    if #available(iOS 16, *) {
-                        // Run code in iOS 15 or later.
-                        TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+
+                        TextField("Amount", value: $checkAmount, format: dollarFormat)
                             .keyboardType(.decimalPad)
-                        //                        .keyboardType(.numberPad)
+                        //  .keyboardType(.numberPad)
                             .focused($amountIsFocused)
                         Picker("Number of people", selection: $numberOfPeople) {
                             ForEach(2..<100) {
                                 Text("\($0) people")
                             }
                         }
-                    } else {
-                        // Fall back to earlier iOS APIs.
-                        TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currencyCode ?? "USD"))
-                            .keyboardType(.decimalPad)
-                        //                        .keyboardType(.numberPad)
-                    }
                 }
                 
                 Section {
@@ -85,32 +94,17 @@ struct ContentView: View {
                 } //That uses multiple trailing closures to specify both the section body (the first closure) and the second header (the second closure).
                 
                 
-                if #available(iOS 16, *) {
-                    // Run code in iOS 16 or later.
                     Section {
-                        Text(grandTotalAndTip, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                        Text(grandTotalAndTip, format: dollarFormat)
                     } header: {
                         Text("Amount Total with Tip")
                     }
-                } else {
-                    // Fall back to earlier iOS APIs.
-                    Section {
-                        Text(grandTotalAndTip, format: .currency(code: Locale.current.currencyCode ?? "USD"))
-                    }
-                }
                 
-                if #available(iOS 16, *) {
-                    // Run code in iOS 16 or later.
-                    Section {
-                        Text(totalPerPerson, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                    } header: {
-                        Text("Amount per person")
-                    }
-                } else {
-                    // Fall back to earlier iOS APIs.
-                    Section {
-                        Text(totalPerPerson, format: .currency(code: Locale.current.currencyCode ?? "USD"))
-                    }
+                
+                Section {
+                    Text(totalPerPerson, format:dollarFormat)
+                } header: {
+                    Text("Amount per person")
                 }
                 
             }
