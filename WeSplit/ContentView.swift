@@ -34,6 +34,15 @@ struct ContentView: View {
         return amountPerPerson
     }
     
+    var grandTotalAndTip: Double {
+        let tipSelection = Double(tipPercentage)
+
+        let tipValue = checkAmount / 100 * tipSelection
+        let grandTotal = checkAmount + tipValue
+        
+        return grandTotal
+    }
+    
     var body: some View {
         NavigationView {
             Form {
@@ -75,6 +84,20 @@ struct ContentView: View {
                     Text("How much tip do you want to leave")
                 } //That uses multiple trailing closures to specify both the section body (the first closure) and the second header (the second closure).
                 
+                
+                if #available(iOS 16, *) {
+                    // Run code in iOS 16 or later.
+                    Section {
+                        Text(grandTotalAndTip, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    } header: {
+                        Text("Amount Total with Tip")
+                    }
+                } else {
+                    // Fall back to earlier iOS APIs.
+                    Section {
+                        Text(grandTotalAndTip, format: .currency(code: Locale.current.currencyCode ?? "USD"))
+                    }
+                }
                 
                 if #available(iOS 16, *) {
                     // Run code in iOS 16 or later.
