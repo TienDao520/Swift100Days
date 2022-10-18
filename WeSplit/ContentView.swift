@@ -23,40 +23,49 @@ struct ContentView: View {
 
     
     var body: some View {
-        Form {
-            Section {
-//                TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currencyCode ?? "USD"))
-                /**For iOS 16: 'currencyCode' was deprecated in iOS 16: renamed to 'currency.identifier' **/
-//                TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-//                    .keyboardType(.decimalPad)
-                ///Locale is a massive struct built into iOS that is responsible for storing all the user’s region settings – what calendar they use, how they separate thousands digits in numbers, whether they use the metric system, and more. In our case, we’re asking whether the user has a preferred currency code, and if they don’t we’ll fall back to “USD” so at least we have something.
-
+        NavigationView {
+            Form {
+                Section {
+                    //                TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currencyCode ?? "USD"))
+                    /**For iOS 16: 'currencyCode' was deprecated in iOS 16: renamed to 'currency.identifier' **/
+                    //                TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    //                    .keyboardType(.decimalPad)
+                    ///Locale is a massive struct built into iOS that is responsible for storing all the user’s region settings – what calendar they use, how they separate thousands digits in numbers, whether they use the metric system, and more. In our case, we’re asking whether the user has a preferred currency code, and if they don’t we’ll fall back to “USD” so at least we have something.
+                    
+                    if #available(iOS 16, *) {
+                        // Run code in iOS 15 or later.
+                        TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                            .keyboardType(.decimalPad)
+                        //                        .keyboardType(.numberPad)
+                        Picker("Number of people", selection: $numberOfPeople) {
+                            ForEach(2..<100) {
+                                Text("\($0) people")
+                            }
+                        }
+                    } else {
+                        // Fall back to earlier iOS APIs.
+                        TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currencyCode ?? "USD"))
+                            .keyboardType(.decimalPad)
+                        //                        .keyboardType(.numberPad)
+                    }
+                }
+                
                 if #available(iOS 16, *) {
-                // Run code in iOS 15 or later.
-                    TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                        .keyboardType(.decimalPad)
-//                        .keyboardType(.numberPad)
+                    // Run code in iOS 16 or later.
+                    Section {
+                        Text(checkAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                    }
                 } else {
-                // Fall back to earlier iOS APIs.
-                    TextField("Amount", value: $checkAmount, format: .currency(code: Locale.current.currencyCode ?? "USD"))
-                        .keyboardType(.decimalPad)
-//                        .keyboardType(.numberPad)
+                    // Fall back to earlier iOS APIs.
+                    Section {
+                        Text(checkAmount, format: .currency(code: Locale.current.currencyCode ?? "USD"))
+                    }
                 }
+                
             }
-            
-            if #available(iOS 16, *) {
-            // Run code in iOS 16 or later.
-                Section {
-                    Text(checkAmount, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
-                }
-            } else {
-            // Fall back to earlier iOS APIs.
-                Section {
-                    Text(checkAmount, format: .currency(code: Locale.current.currencyCode ?? "USD"))
-                }
-            }
-
+            .navigationTitle("WeSplit")
         }
+        
     }
 }
 
