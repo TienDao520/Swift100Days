@@ -8,13 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var sleepAmount = 8.0
+    @State private var wakeUp = Date.now
 
     var body: some View {
-        ///we can just ask Swift to format the Double using formatted():
-        Stepper("\(sleepAmount.formatted()) hours", value: $sleepAmount, in: 4...12, step: 0.25)
+//        DatePicker("Please enter a time", selection: $wakeUp, displayedComponents: .hourAndMinute)
+//        DatePicker("Please enter a time", selection: $wakeUp, displayedComponents: .date)
+//        DatePicker("Please enter a time", selection: $wakeUp, displayedComponents: .hourAndMinute)
+        DatePicker("Please enter a time", selection: $wakeUp, in: Date.now...)
+//            .labelsHidden()
+    }
+    
+    func exampleDates() {
+        // create a second Date instance set to one day in seconds from now
+        let tomorrow = Date.now.addingTimeInterval(86400)
 
-
+        // create a range from those two
+        let range = Date.now...tomorrow
     }
 }
 
