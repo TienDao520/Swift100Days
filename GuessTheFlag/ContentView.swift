@@ -17,6 +17,28 @@ struct ContentView: View {
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
     @State private var score = 0
+    
+    @State private var endGame = false
+    @State private var questionAsked = 0
+    
+    ///Views and modifiers: Wrap up: Challenge 2
+    ///replace the Image view used for flags with a new FlagImage() view that renders one flag image using the specific set of modifiers we had.
+    struct FlagImage: View {
+        let country: String
+        
+        init(of country: String) {
+            self.country = country
+        }
+        
+        var body: some View {
+            Image(country)
+                .renderingMode(.original)
+                .clipShape(Capsule())
+                .overlay(Capsule().stroke(Color.black, lineWidth: 2))
+                .shadow(color: .black, radius: 2)
+        }
+    }
+    
 
     var body: some View {
         ZStack {
@@ -46,11 +68,7 @@ struct ContentView: View {
                             // flag was tapped
                             flagTapped(number)
                         } label: {
-                            Image(countries[number])
-                                .renderingMode(.original)
-    //                            .clipShape(Circle())
-    //                            .clipShape(Capsule())
-                                .shadow(radius: 5)
+                            FlagImage(of: countries[number])
 
                         }
                     }
@@ -71,11 +89,16 @@ struct ContentView: View {
             .padding()
             
         }
-        .alert(scoreTitle, isPresented: $showingScore) {
-            Button("Continue", action: askQuestion)
-        } message: {
-            Text("Your score is \(score)")
-        }
+            .alert("Gameover", isPresented: $endGame) {
+                Button("Continue", action: askQuestion)
+            } message: {
+                Text("Your final score is \(score)")
+            }
+            .alert(scoreTitle, isPresented:  $showingScore) {
+                Button("Continue", action: askQuestion)
+            } message: {
+                Text("Your current score is \(score)")
+            }
         
     }
     
@@ -96,6 +119,11 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        questionAsked += 1
+        if questionAsked == 8 {
+            endGame = true
+            showingScore = false
+        }
     }
 }
 struct ContentView_Previews: PreviewProvider {
